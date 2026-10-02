@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS Конвертер</title>
+    <!-- Подключаем шрифты из Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #f0f0f0;
+            --accent: #E5A93C; /* Кинематографичный желто-оранжевый акцент */
+            --bg-panel: rgba(20, 20, 22, 0.75);
+            --border-panel: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            /* Киношный фон с Unsplash (объектив/камера) + затемняющий градиент */
+            background-color: #0a0a0a;
+            background-image: 
+                linear-gradient(to bottom, rgba(10, 10, 12, 0.8), rgba(10, 10, 12, 0.95)),
+                url('https://images.unsplash.com/photo-1518131672697-613becd4fab5?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .container { 
+            width: 100%;
+            max-width: 480px; 
+            background: var(--bg-panel); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            border: 1px solid var(--border-panel);
+            backdrop-filter: blur(10px); /* Эффект матового стекла */
+            -webkit-backdrop-filter: blur(10px);
+            box-sizing: border-box;
+            margin: 0 20px;
+        }
+
+        .input-group { margin-bottom: 25px; }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #aaa;
+        }
+
+        input[type="number"] { 
+            width: 100%; 
+            padding: 12px 15px; 
+            font-size: 1.2rem; 
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            box-sizing: border-box; 
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2); 
+            color: white;
+            border-radius: 6px; 
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent);
+        }
+
+        /* Убираем стрелочки у инпута */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        .chips { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            margin-top: 12px; 
+        }
+
+        .chip { 
+            padding: 4px 10px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 0.8rem; 
+            color: #ccc;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover { 
+            background: rgba(255,255,255,0.15); 
+            color: white;
+        }
+
+        .result { 
+            margin-top: 30px; 
+            padding: 20px; 
+            background: rgba(0,0,0,0.5); 
+            border-radius: 8px; 
+            border-left: 4px solid var(--accent);
+            display: none; 
+        }
+
+        .result h3 {
+            margin-top: 0; 
+            margin-bottom: 15px; 
+            font-size: 1rem; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        .result-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            padding: 12px 0; 
+            font-size: 1.1rem; 
+        }
+
+        .result-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .result-value {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .duration-val {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>FPS Конвертер</h1>
+        <div class="subtitle">Синхронизация таймлинии</div>
+    </div>
+
+    <div class="container">
+        
+        <div class="input-group">
+            <label>FPS таймлинии (Project)</label>
+            <input type="number" id="timelineFps" step="0.001" value="24" oninput="calculateSpeed()">
+            <div class="chips">
+                <span class="chip" onclick="setFps('timeline', 23.976)">23.976</span>
+                <span class="chip" onclick="setFps('timeline', 24)">24</span>
+                <span class="chip" onclick="setFps('timeline', 25)">25</span>
+                <span class="chip" onclick="setFps('timeline', 29.97)">29.97</span>
+                <span class="chip" onclick="setFps('timeline', 30)">30</span>
+                <span class="chip" onclick="setFps('timeline', 50)">50</span>
+                <span class="chip" onclick="setFps('timeline', 59.94)">59.94</span>
+                <span class="chip" onclick="setFps('timeline', 60)">60</span>
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label>FPS клипа (Source)</label>
+            <input type="number" id="clipFps" step="0.001" value="30" oninput="calculateSpeed()">
+            <div class="chips">
+                <span class="chip" onclick="setFps('clip', 23.976)">23.976</span>
+                <span class="chip" onclick="setFps('clip', 24)">24</span>
+                <span class="chip" onclick="setFps('clip', 25)">25</span>
+                <span class="chip" onclick="setFps('clip', 29.97)">29.97</span>
+                <span class="chip" onclick="setFps('clip', 30)">30</span>
+                <span class="chip" onclick="setFps('clip', 48)">48</span>
+                <span class="chip" onclick="setFps('clip', 50)">50</span>
+                <span class="chip" onclick="setFps('clip', 59.94)">59.94</span>
+                <span class="chip" onclick="setFps('clip', 60)">60</span>
+            </div>
+        </div>
+
+        <div class="result" id="resultArea">
+            <h3>Clip Speed (Premiere Pro)</h3>
+            <div class="result-row">
+                <span>Speed:</span>
+                <span class="result-value"><span id="speedPercent"></span>%</span>
+            </div>
+            <div class="result-row" style="font-size: 0.9em; color: #777;">
+                <span>Duration (автоматически):</span>
+                <span class="duration-val"><span id="durationPercent"></span>%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ntscMap = {
+            23.976: 24000 / 1001,
+            29.97: 30000 / 1001,
+            59.94: 60000 / 1001
+        };
+
+        function setFps(type, value) {
+            document.getElementById(type + 'Fps').value = value;
+            calculateSpeed();
+        }
+
+        function calculateSpeed() {
+            let timelineRaw = parseFloat(document.getElementById('timelineFps').value);
+            let clipRaw = parseFloat(document.getElementById('clipFps').value);
+
+            if (isNaN(timelineRaw) || isNaN(clipRaw) || timelineRaw === 0) {
+                document.getElementById('resultArea').style.display = 'none';
+                return;
+            }
+
+            let timelineFps = ntscMap[timelineRaw] || timelineRaw;
+            let clipFps = ntscMap[clipRaw] || clipRaw;
+
+            let speed = (clipFps / timelineFps) * 100;
+            let duration = (timelineFps / clipFps) * 100;
+
+            document.getElementById('resultArea').style.display = 'block';
+            
+            document.getElementById('speedPercent').innerText = parseFloat(speed.toFixed(3));
+            document.getElementById('durationPercent').innerText = parseFloat(duration.toFixed(3));
+        }
+
+        calculateSpeed();
+    </script>
+</body>
+</html>
