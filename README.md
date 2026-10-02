@@ -27,3 +27,6 @@ FPS Конвертер: Клип - Таймлиния.
 ---
 
 Приятного использования !
+
+https://github.com/VidosIQ/FPS-converter
+https://vidosiq.github.io/FPS-converter/
