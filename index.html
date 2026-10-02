@@ -1,8 +1,15 @@
 <!DOCTYPE html>
+    <!-- Мобильная адаптация -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Запрет масштабирования при клике на инпуты в iOS и правильный масштаб -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Цвет панели статуса на смартфонах -->
+    <meta name="theme-color" content="#0f0c0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <title>FPS Конвертер</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +19,7 @@
         :root {
             --primary: #f0f0f0;
             --accent: #E5A93C;
-            --success: #4ade80; /* Яркий зеленый цвет для результата */
+            --success: #4ade80; 
             --bg-panel: rgba(15, 12, 10, 0.85); 
             --border-panel: rgba(255, 255, 255, 0.1);
         }
@@ -20,7 +27,7 @@
         body { 
             font-family: 'Inter', sans-serif; 
             margin: 0;
-            padding: 0;
+            padding: 20px 0; /* Отступы сверху и снизу для скролла на низких экранах */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -34,11 +41,14 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            box-sizing: border-box;
+            overscroll-behavior-y: none; /* Убирает эффект "резинки" при скролле */
         }
 
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            padding: 0 15px;
         }
 
         h1 {
@@ -69,7 +79,7 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
             border: 1px solid var(--border-panel);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* Для iOS Safari */
             box-sizing: border-box;
             margin: 0 20px;
         }
@@ -98,12 +108,16 @@
             border-radius: 6px; 
             outline: none;
             transition: border-color 0.3s ease;
+            /* Сброс стилей iOS Safari */
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         input[type="number"]:focus {
             border-color: var(--accent);
         }
 
+        /* Убираем стрелки в инпутах кроссбраузерно */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
@@ -117,7 +131,6 @@
             margin-top: 12px; 
         }
 
-        /* Класс для принудительного переноса кнопок на новую строку */
         .break {
             flex-basis: 100%;
             height: 0;
@@ -126,20 +139,31 @@
         }
 
         .chip { 
-            padding: 4px 10px; 
+            padding: 6px 12px; 
             background: rgba(255,255,255,0.08); 
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 4px; 
+            border-radius: 6px; 
             cursor: pointer; 
-            font-size: 0.8rem; 
+            font-size: 0.85rem; 
             color: #ddd;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            /* Запрет выделения при тапе на телефон */
+            -webkit-user-select: none;
+            user-select: none;
+            /* Убираем синюю подсветку при клике на мобилках */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .chip:hover { 
             background: rgba(255,255,255,0.2); 
             color: white;
             border-color: rgba(255,255,255,0.3);
+        }
+
+        /* Анимация прожатия кнопки (вместо hover на телефонах) */
+        .chip:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.3); 
         }
 
         .result { 
@@ -174,7 +198,7 @@
         .result-value {
             font-family: 'Oswald', sans-serif;
             font-size: 1.5rem;
-            color: var(--success); /* Применили зеленый цвет */
+            color: var(--success); 
             letter-spacing: 1px;
         }
 
@@ -182,6 +206,33 @@
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
             color: #ccc;
+        }
+
+        /* ----- МОБИЛЬНАЯ АДАПТАЦИЯ ----- */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 3rem; /* Уменьшаем заголовок */
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+            }
+
+            .container {
+                padding: 20px; 
+                margin: 0 15px; /* Меньше отступы по краям экрана */
+            }
+
+            .chip {
+                padding: 8px 10px; /* Увеличиваем высоту для удобства пальца */
+                flex-grow: 1; /* Кнопки растягиваются на всю ширину равномерно */
+                text-align: center;
+            }
+
+            .result-value {
+                font-size: 1.3rem; 
+            }
         }
     </style>
 </head>
@@ -204,7 +255,7 @@
                 <span class="chip" onclick="setFps('timeline', 29.97)">29.97</span>
                 <span class="chip" onclick="setFps('timeline', 30)">30</span>
                 <span class="chip" onclick="setFps('timeline', 48)">48</span>
-                <div class="break"></div> <!-- Перенос строки -->
+                <div class="break"></div>
                 <span class="chip" onclick="setFps('timeline', 50)">50</span>
                 <span class="chip" onclick="setFps('timeline', 59.94)">59.94</span>
                 <span class="chip" onclick="setFps('timeline', 60)">60</span>
@@ -221,7 +272,7 @@
                 <span class="chip" onclick="setFps('clip', 29.97)">29.97</span>
                 <span class="chip" onclick="setFps('clip', 30)">30</span>
                 <span class="chip" onclick="setFps('clip', 48)">48</span>
-                <div class="break"></div> <!-- Перенос строки -->
+                <div class="break"></div>
                 <span class="chip" onclick="setFps('clip', 50)">50</span>
                 <span class="chip" onclick="setFps('clip', 59.94)">59.94</span>
                 <span class="chip" onclick="setFps('clip', 60)">60</span>
