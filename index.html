@@ -1,33 +1,37 @@
 <!DOCTYPE html>
-    <!-- Мобильная адаптация -->
+<!-- FPS Конвертер: Клип - Таймлиния -->
+<!-- После ревью кода -->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Запрет масштабирования при клике на инпуты в iOS и правильный масштаб -->
+    <!-- Мета-теги для мобильных устройств: правильный масштаб, запрет зума при клике на поля ввода -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Цвет панели статуса на смартфонах -->
+    <!-- Окрашивание верхней панели статуса (где часы и батарея) на смартфонах -->
     <meta name="theme-color" content="#0f0c0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>FPS Конвертер: Клип-Таймлиния</title>
     
-    <title>FPS Конвертер</title>
+    <!-- Подключение строгих и читаемых шрифтов от Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
+        /* Цветовая палитра проекта */
         :root {
-            --primary: #f0f0f0;
-            --accent: #E5A93C;
-            --success: #4ade80; 
-            --bg-panel: rgba(15, 12, 10, 0.85); 
-            --border-panel: rgba(255, 255, 255, 0.1);
+            --primary: #f0f0f0; /* Основной цвет текста */
+            --accent: #E5A93C; /* Акцентный кинематографичный желто-оранжевый */
+            --success: #4ade80; /* Зеленый цвет для итогового результата */
+            --bg-panel: rgba(15, 12, 10, 0.85); /* Полупрозрачный фон панели */
+            --border-panel: rgba(255, 255, 255, 0.1); /* Тонкая светлая граница */
         }
 
+        /* Базовые стили страницы и фоновое изображение */
         body { 
             font-family: 'Inter', sans-serif; 
             margin: 0;
-            padding: 20px 0; /* Отступы сверху и снизу для скролла на низких экранах */
+            padding: 20px 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -35,6 +39,7 @@
             justify-content: center;
             color: var(--primary);
             background-color: #5c4332;
+            /* Фон в стиле кинопленки (затемняющий градиент сепии поверх фото) */
             background-image: 
                 linear-gradient(to bottom, rgba(120, 85, 60, 0.6), rgba(60, 40, 25, 0.85)),
                 url('https://images.unsplash.com/photo-1518131672697-613becd4fab5?q=80&w=2000&auto=format&fit=crop');
@@ -42,9 +47,10 @@
             background-position: center;
             background-attachment: fixed;
             box-sizing: border-box;
-            overscroll-behavior-y: none; /* Убирает эффект "резинки" при скролле */
+            overscroll-behavior-y: none; /* Убирает пружинящий скролл на iOS */
         }
 
+        /* Заголовок лендинга */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -70,6 +76,7 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.6);
         }
 
+        /* Главная панель конвертера с эффектом матового стекла (Glassmorphism) */
         .container { 
             width: 100%;
             max-width: 480px; 
@@ -79,7 +86,7 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); 
             border: 1px solid var(--border-panel);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px); /* Для iOS Safari */
+            -webkit-backdrop-filter: blur(12px); /* Поддержка для Safari */
             box-sizing: border-box;
             margin: 0 20px;
         }
@@ -95,6 +102,7 @@
             color: #bbb;
         }
 
+        /* Поля ручного ввода цифр */
         input[type="number"] { 
             width: 100%; 
             padding: 12px 15px; 
@@ -108,7 +116,6 @@
             border-radius: 6px; 
             outline: none;
             transition: border-color 0.3s ease;
-            /* Сброс стилей iOS Safari */
             -webkit-appearance: none;
             appearance: none;
         }
@@ -117,13 +124,14 @@
             border-color: var(--accent);
         }
 
-        /* Убираем стрелки в инпутах кроссбраузерно */
+        /* Скрытие системных стрелок увеличения/уменьшения в полях ввода */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
             margin: 0; 
         }
 
+        /* Контейнер для кнопок быстрого выбора (чипов) */
         .chips { 
             display: flex; 
             flex-wrap: wrap; 
@@ -131,6 +139,7 @@
             margin-top: 12px; 
         }
 
+        /* Утилита для принудительного переноса кнопок на новую строку */
         .break {
             flex-basis: 100%;
             height: 0;
@@ -138,6 +147,7 @@
             padding: 0;
         }
 
+        /* Стилизация кнопок-чипов */
         .chip { 
             padding: 6px 12px; 
             background: rgba(255,255,255,0.08); 
@@ -147,11 +157,9 @@
             font-size: 0.85rem; 
             color: #ddd;
             transition: all 0.15s ease;
-            /* Запрет выделения при тапе на телефон */
-            -webkit-user-select: none;
+            -webkit-user-select: none; /* Запрет случайного выделения текста */
             user-select: none;
-            /* Убираем синюю подсветку при клике на мобилках */
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат при тапе на Android */
         }
 
         .chip:hover { 
@@ -160,19 +168,26 @@
             border-color: rgba(255,255,255,0.3);
         }
 
-        /* Анимация прожатия кнопки (вместо hover на телефонах) */
+        /* Анимация физического "вдавливания" при тапе/клике */
         .chip:active {
             transform: scale(0.95);
             background: rgba(255,255,255,0.3); 
         }
 
+        /* Блок с результатами вычислений */
         .result { 
             margin-top: 30px; 
             padding: 20px; 
             background: rgba(0,0,0,0.4); 
             border-radius: 8px; 
             border-left: 4px solid var(--accent);
-            display: none; 
+            display: none; /* Скрыт по умолчанию */
+            animation: fadeIn 0.7s ease-out; /* Плавное появление */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .result h3 {
@@ -208,31 +223,14 @@
             color: #ccc;
         }
 
-        /* ----- МОБИЛЬНАЯ АДАПТАЦИЯ ----- */
+        /* Мобильная адаптация (для экранов уже 480px) */
         @media (max-width: 480px) {
-            h1 {
-                font-size: 3rem; /* Уменьшаем заголовок */
-            }
-            
-            .subtitle {
-                font-size: 0.9rem;
-                letter-spacing: 2px;
-            }
-
-            .container {
-                padding: 20px; 
-                margin: 0 15px; /* Меньше отступы по краям экрана */
-            }
-
-            .chip {
-                padding: 8px 10px; /* Увеличиваем высоту для удобства пальца */
-                flex-grow: 1; /* Кнопки растягиваются на всю ширину равномерно */
-                text-align: center;
-            }
-
-            .result-value {
-                font-size: 1.3rem; 
-            }
+            h1 { font-size: 3rem; }
+            .subtitle { font-size: 0.9rem; letter-spacing: 2px; }
+            .container { padding: 20px; margin: 0 15px; }
+            /* Кнопки-чипы растягиваются на всю ширину для удобства нажатия пальцем */
+            .chip { padding: 8px 10px; flex-grow: 1; text-align: center; }
+            .result-value { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -243,11 +241,13 @@
         <div class="subtitle">Синхронизация таймлинии</div>
     </div>
 
+    <!-- Основной интерфейс приложения -->
     <div class="container">
         
+        <!-- Блок FPS таймлинии -->
         <div class="input-group">
             <label>FPS таймлинии (Project)</label>
-            <input type="number" id="timelineFps" step="0.001" value="24" oninput="calculateSpeed()">
+            <input type="number" id="timelineFps" step="0.001" min="1" value="24" oninput="calculateSpeed()">
             <div class="chips">
                 <span class="chip" onclick="setFps('timeline', 23.976)">23.976</span>
                 <span class="chip" onclick="setFps('timeline', 24)">24</span>
@@ -262,9 +262,10 @@
             </div>
         </div>
         
+        <!-- Блок FPS исходника -->
         <div class="input-group">
             <label>FPS клипа (Source)</label>
-            <input type="number" id="clipFps" step="0.001" value="30" oninput="calculateSpeed()">
+            <input type="number" id="clipFps" step="0.001" min="1" value="30" oninput="calculateSpeed()">
             <div class="chips">
                 <span class="chip" onclick="setFps('clip', 23.976)">23.976</span>
                 <span class="chip" onclick="setFps('clip', 24)">24</span>
@@ -280,6 +281,7 @@
             </div>
         </div>
 
+        <!-- Вывод результатов -->
         <div class="result" id="resultArea">
             <h3>CLIP SPEED</h3>
             <div class="result-row">
@@ -293,39 +295,51 @@
         </div>
     </div>
 
+    <!-- Логика приложения -->
     <script>
+        // Справочник точных математических дробей для NTSC стандартов 
+        // (предотвращает накопление рассинхрона видео и аудио на длинных дублях)
         const ntscMap = {
             23.976: 24000 / 1001,
             29.97: 30000 / 1001,
             59.94: 60000 / 1001
         };
 
+        // Функция быстрой подстановки значения из кнопок-чипов
         function setFps(type, value) {
             document.getElementById(type + 'Fps').value = value;
             calculateSpeed();
         }
 
+        // Основная математика синхронизации
         function calculateSpeed() {
             let timelineRaw = parseFloat(document.getElementById('timelineFps').value);
             let clipRaw = parseFloat(document.getElementById('clipFps').value);
 
-            if (isNaN(timelineRaw) || isNaN(clipRaw) || timelineRaw === 0) {
-                document.getElementById('resultArea').style.display = 'none';
+            // Защита от ошибок ввода (пустые поля, нули, отрицательные числа)
+            if (isNaN(timelineRaw) || isNaN(clipRaw) || timelineRaw <= 0 || clipRaw <= 0) {
+                document.getElementById('resultArea').style.display = 'none'; // Скрываем блок результатов
                 return;
             }
 
+            // Подставляем точную дробь, если введено значение NTSC, иначе берем введенную цифру
             let timelineFps = ntscMap[timelineRaw] || timelineRaw;
             let clipFps = ntscMap[clipRaw] || clipRaw;
 
+            // Расчет для Premiere Pro: 
+            // Ускорение/замедление (Speed) и изменение длительности (Duration)
             let speed = (clipFps / timelineFps) * 100;
             let duration = (timelineFps / clipFps) * 100;
 
+            // Отображаем блок с результатами
             document.getElementById('resultArea').style.display = 'block';
             
+            // Выводим результат, округленный до 3 знаков после запятой (отбрасывая лишние нули)
             document.getElementById('speedPercent').innerText = parseFloat(speed.toFixed(3));
             document.getElementById('durationPercent').innerText = parseFloat(duration.toFixed(3));
         }
 
+        // Вызываем расчет один раз при первой загрузке страницы
         calculateSpeed();
     </script>
 </body>
